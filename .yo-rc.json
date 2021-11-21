@@ -1,0 +1,49 @@
+{
+  "generator-jhipster": {
+    "blueprints": [
+      {
+        "name": "generator-jhipster-nodejs",
+        "version": "2.0.0"
+      }
+    ],
+    "otherModules": [
+      {
+        "name": "generator-jhipster-nodejs",
+        "version": "2.0.0"
+      }
+    ],
+    "applicationType": "microservice",
+    "baseName": "nestjsDemo",
+    "jhipsterVersion": "7.0.1",
+    "skipClient": true,
+    "skipUserManagement": true,
+    "skipServer": false,
+    "skipCheckLengthOfIdentifier": false,
+    "skipFakeData": false,
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "testFrameworks": [],
+    "pages": [],
+    "creationTimestamp": 1637469959978,
+    "serverPort": "8081",
+    "packageName": "com.jhipster.node",
+    "databaseType": "sql",
+    "devDatabaseType": "sqlite",
+    "prodDatabaseType": "mysql",
+    "authenticationType": "jwt",
+    "enableTranslation": false,
+    "nativeLanguage": "en",
+    "packageFolder": "com/jhipster/node",
+    "jwtSecretKey": "ZDA4MWFiM2M5NDg3Nzc0MWU5NTZlMTc0ZDliNTM2Y2RhZjY2NmVhYWMwNTQyM2NiZTRlYTk3MGQ2OThmMWZmOGM5ZGRmZDFmNjVlM2NmYzZjOWM1YjBmMTFmMjM0OThlOWYxMGQ1NzU3ZjI2Y2Q2NWM0MDZkMjQ0NDI0YjVhMzE=",
+    "serviceDiscoveryType": false,
+    "websocket": false,
+    "searchEngine": false,
+    "messageBroker": false,
+    "cacheProvider": "ehcache",
+    "buildTool": "maven",
+    "enableHibernateCache": true,
+    "reactive": false,
+    "languages": ["en", "fr"]
+  }
+}
