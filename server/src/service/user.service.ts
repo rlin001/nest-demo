@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../domain/user.entity';
-import { UserDTO } from './dto/user.dto';
-import { UserMapper } from './mapper/user.mapper';
-import { UserRepository } from '../repository/user.repository';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
-import { transformPassword } from '../security';
+import {Injectable} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {User} from '../domain/user.entity';
+import {UserDTO} from './dto/user.dto';
+import {UserMapper} from './mapper/user.mapper';
+import {UserRepository} from '../repository/user.repository';
+import {FindManyOptions, FindOneOptions} from 'typeorm';
+import {transformPassword} from '../security';
 
 @Injectable()
 export class UserService {
@@ -36,6 +36,30 @@ export class UserService {
             resultList[0] = usersDTO;
         }
         return resultList;
+    }
+
+
+    async saveList(userDTOs: UserDTO[], creator?: string, updatePassword = false): Promise<UserDTO[] | undefined> {
+      const users = [];
+
+      for (const userDTO of userDTOs) {
+        const user = this.convertInAuthorities(UserMapper.fromDTOtoEntity(userDTO));
+        if (updatePassword) {
+          await transformPassword(user);
+        }
+        if (creator) {
+          if (!user.createdBy) {
+            user.createdBy = creator;
+          }
+          user.lastModifiedBy = creator;
+        }
+        users.push(user)
+      }
+
+      const results = await this.userRepository.save(users);
+      return results.map((result)=>{
+        return UserMapper.fromEntityToDTO(this.flatAuthorities(result))
+      })
     }
 
     async save(userDTO: UserDTO, creator?: string, updatePassword = false): Promise<UserDTO | undefined> {

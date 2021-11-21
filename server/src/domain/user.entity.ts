@@ -6,7 +6,7 @@ import { Exclude } from 'class-transformer';
 @Entity('nhi_user')
 export class User extends BaseEntity {
     @Column({ unique: true })
-    login: string;
+    userName: string;
     @Column({ nullable: true })
     firstName?: string;
     @Column({ nullable: true })

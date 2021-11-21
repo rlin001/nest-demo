@@ -1,16 +1,15 @@
-import { Module } from '@nestjs/common';
-import { AuthService } from '../service/auth.service';
-import { UserModule } from '../module/user.module';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from '../security/passport.jwt.strategy';
-import { UserJWTController } from '../web/rest/user.jwt.controller';
-import { config } from '../config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthorityRepository } from '../repository/authority.repository';
+import {Module} from '@nestjs/common';
+import {AuthService} from '../service/auth.service';
+import {UserModule} from './user.module';
+import {PassportModule} from '@nestjs/passport';
+import {JwtModule} from '@nestjs/jwt';
+import {JwtStrategy} from '../security/passport.jwt.strategy';
+import {config} from '../config';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {AuthorityRepository} from '../repository/authority.repository';
 
-import { PublicUserController } from '../web/rest/public.user.controller';
-import { AccountController } from '../web/rest/account.controller';
+import {AccountController} from '../web/rest/account.controller';
+import {RedisCacheModule} from "./cache.module";
 
 @Module({
     imports: [
@@ -21,8 +20,9 @@ import { AccountController } from '../web/rest/account.controller';
             secret: config['jhipster.security.authentication.jwt.base64-secret'],
             signOptions: { expiresIn: '300s' },
         }),
+      RedisCacheModule
     ],
-    controllers: [UserJWTController, PublicUserController, AccountController],
+    controllers: [AccountController],
     providers: [AuthService, JwtStrategy],
     exports: [AuthService],
 })

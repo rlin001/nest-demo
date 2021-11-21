@@ -9,7 +9,7 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
     role2: Authority = { name: 'ROLE_USER' };
 
     user1: User = {
-        login: 'system',
+        userName: 'system',
         password: 'system',
         firstName: 'System',
         lastName: 'System',
@@ -22,7 +22,7 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
     };
 
     user2: User = {
-        login: 'anonymoususer',
+        userName: 'anonymoususer',
         password: 'anonymoususer',
         firstName: 'Anonymous',
         lastName: 'User',
@@ -35,7 +35,7 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
     };
 
     user3: User = {
-        login: 'admin',
+        userName: 'admin',
         password: 'admin',
         firstName: 'Administrator',
         lastName: 'Administrator',
@@ -48,7 +48,7 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
     };
 
     user4: User = {
-        login: 'user',
+        userName: 'user',
         password: 'user',
         firstName: 'User',
         lastName: 'User',

@@ -29,12 +29,12 @@ describe('App', () => {
     it('/GET public roles OK', () =>
         request(app.getHttpServer())
             .get('/api/authorities')
-            .expect(200));
+            .expect(404));
 
     it('/GET public users OK', () =>
         request(app.getHttpServer())
             .get('/api/users')
-            .expect(200));
+            .expect(404));
 
     afterEach(async () => {
         await app.close();

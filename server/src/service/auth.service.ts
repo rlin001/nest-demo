@@ -1,13 +1,13 @@
-import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { UserLoginDTO } from '../service/dto/user-login.dto';
-import { Payload } from '../security/payload.interface';
+import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {JwtService} from '@nestjs/jwt';
+import {UserLoginDTO} from '../service/dto/user-login.dto';
+import {Payload} from '../security/payload.interface';
 import * as bcrypt from 'bcrypt';
-import { AuthorityRepository } from '../repository/authority.repository';
-import { UserService } from '../service/user.service';
-import { UserDTO } from './dto/user.dto';
-import { FindManyOptions } from 'typeorm';
+import {AuthorityRepository} from '../repository/authority.repository';
+import {UserService} from '../service/user.service';
+import {UserDTO} from './dto/user.dto';
+import {FindManyOptions} from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -22,10 +22,10 @@ export class AuthService {
         const loginUserName = userLogin.username;
         const loginPassword = userLogin.password;
 
-        const userFind = await this.userService.findByFields({ where: { login: loginUserName } });
+        const userFind = await this.userService.findByFields({ where: { userName: loginUserName } });
         const validPassword = !!userFind && (await bcrypt.compare(loginPassword, userFind.password));
         if (!userFind || !validPassword) {
-            throw new HttpException('Invalid login name or password!', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Invalid user name or password!', HttpStatus.BAD_REQUEST);
         }
 
         if (userFind && !userFind.activated) {
@@ -34,7 +34,7 @@ export class AuthService {
 
         const user = await this.findUserWithAuthById(userFind.id);
 
-        const payload: Payload = { id: user.id, username: user.login, authorities: user.authorities };
+        const payload: Payload = { id: user.id, username: user.userName, authorities: user.authorities };
 
         /* eslint-disable */
     return {
@@ -61,9 +61,9 @@ export class AuthService {
     }
 
     async changePassword(userLogin: string, currentClearTextPassword: string, newPassword: string): Promise<void> {
-        const userFind: UserDTO = await this.userService.findByFields({ where: { login: userLogin } });
+        const userFind: UserDTO = await this.userService.findByFields({ where: { userName: userLogin } });
         if (!userFind) {
-            throw new HttpException('Invalid login name!', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Invalid user name!', HttpStatus.BAD_REQUEST);
         }
 
         if (!(await bcrypt.compare(currentClearTextPassword, userFind.password))) {
@@ -75,7 +75,7 @@ export class AuthService {
     }
 
     async registerNewUser(newUser: UserDTO): Promise<UserDTO> {
-        let userFind: UserDTO = await this.userService.findByFields({ where: { login: newUser.login } });
+        let userFind: UserDTO = await this.userService.findByFields({ where: { userName: newUser.userName } });
         if (userFind) {
             throw new HttpException('Login name already used!', HttpStatus.BAD_REQUEST);
         }
@@ -84,14 +84,14 @@ export class AuthService {
             throw new HttpException('Email is already in use!', HttpStatus.BAD_REQUEST);
         }
         newUser.authorities = ['ROLE_USER'];
-        const user: UserDTO = await this.userService.save(newUser, newUser.login, true);
+        const user: UserDTO = await this.userService.save(newUser, newUser.userName, true);
         return user;
     }
 
     async updateUserSettings(userLogin: string, newUserInfo: UserDTO): Promise<UserDTO> {
-        const userFind: UserDTO = await this.userService.findByFields({ where: { login: userLogin } });
+        const userFind: UserDTO = await this.userService.findByFields({ where: { userName: userLogin } });
         if (!userFind) {
-            throw new HttpException('Invalid login name!', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Invalid user name!', HttpStatus.BAD_REQUEST);
         }
         const userFindEmail: UserDTO = await this.userService.findByFields({ where: { email: newUserInfo.email } });
         if (userFindEmail && newUserInfo.email !== userFind.email) {

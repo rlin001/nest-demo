@@ -8,6 +8,7 @@ import { Logger, ValidationPipe, BadRequestException } from '@nestjs/common';
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');
 const useJHipsterRegistry = config.get('eureka.client.enabled');
+import session from 'express-session';
 
 async function bootstrap(): Promise<void> {
     loadCloudConfig();
@@ -20,8 +21,16 @@ async function bootstrap(): Promise<void> {
             exceptionFactory: (): BadRequestException => new BadRequestException('Validation error'),
         }),
     );
+  app.use(
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: false
+    }),
+  );
 
-    logger.log('The client is not been generated');
+
+  logger.log('The client is not been generated');
     setupSwagger(app);
 
     await app.listen(port);

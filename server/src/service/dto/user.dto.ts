@@ -9,7 +9,7 @@ import { Exclude } from 'class-transformer';
 export class UserDTO extends BaseDTO {
     @ApiModelProperty({ uniqueItems: true, example: 'myuser', description: 'User login' })
     @IsString()
-    login: string;
+    userName: string;
 
     @ApiModelProperty({ example: 'MyUser', description: 'User first name', required: false })
     firstName?: string;
