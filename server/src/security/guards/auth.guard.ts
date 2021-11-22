@@ -10,10 +10,13 @@ export class AuthGuard extends NestAuthGuard('jwt') implements CanActivate {
       super();
     }
 
-    canActivate(context: ExecutionContext): any {
+    async canActivate(context: ExecutionContext): Promise<any> {
       const request = context.switchToHttp().getRequest();
-      const existAuthToken = this.cacheService.handleJWTToken("authorization", request.headers['authorization'], 'find');
+      const existAuthToken = await this.cacheService.handleJWTToken("authorization", request.headers['authorization'], 'find');
       this.logger.log("AuthGuard existAuthToken:", existAuthToken)
-      return !existAuthToken || super.canActivate(context);
+      if (existAuthToken) {
+        return super.canActivate(context);
+      }
+      return existAuthToken
     }
 }

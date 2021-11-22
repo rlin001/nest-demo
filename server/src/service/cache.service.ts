@@ -5,21 +5,16 @@ import { Cache } from 'cache-manager';
 export class CacheService {
   logger = new Logger('CacheService');
   constructor(
-    @Inject(CACHE_MANAGER)
-    private cacheManager: Cache
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
   ) {
   }
 
-  cacheSet(key: string, value: any, ttl?: number) {
-    this.cacheManager.set(key, value, { ttl: ttl }, (err: any) => {
-      if (err) {
-        throw err;
-      }
-    })
+  async set(key: string, value: any) {
+    await this.cache.set(key, value)
   }
 
-  async cacheGet(key: any): Promise<any> {
-    return this.cacheManager.get(key);
+  async get(key: any): Promise<any> {
+    return await this.cache.get(key);
   }
 
 
@@ -28,24 +23,24 @@ export class CacheService {
     if (!key || !value) {
       return false;
     }
-    const targetValue = await this.cacheGet(key);
+    const targetValue = await this.get(key);
     this.logger.log("targetValue", targetValue);
-    let values = JSON.parse(targetValue || '[]');
+    let values = targetValue || [];
     let handleSuccess = false;
     switch (action) {
       case 'add':
       case 'update':
         values.push(value);
         handleSuccess = true;
-        this.cacheSet(key, values);
+        await this.set(key, values);
         break;
       case 'find':
         handleSuccess = values.indexOf(value) != -1;
         break;
       case 'delete':
-        values = values.splice(values.indexOf(value),1)
+        values.splice(values.indexOf(value),1)
         handleSuccess = true;
-        this.cacheSet(key, values);
+        await this.set(key, values);
         break;
     }
     return handleSuccess;

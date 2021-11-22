@@ -9,7 +9,7 @@ import { Request } from '../../client/request';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 
 
-@Controller('api/pets')
+@Controller('pet')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, ClassSerializerInterceptor)
 @ApiBearerAuth()
@@ -19,42 +19,12 @@ export class PetController {
 
   constructor(private readonly petService: PetService) {}
 
-
-  @Get('/')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'List all records',
-    type: PetDTO,
-  })
-  async getAll(@Req() req: Request): Promise<PetDTO []>  {
-    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.petService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-    });
-    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
-    return results;
-  }
-
-  @Get('/:id')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'The found record',
-    type: PetDTO,
-  })
-  async getOne(@Param('id') id: number): Promise<PetDTO>  {
-    return await this.petService.findById(id);
-  }
-
   @PostMethod('/')
-  @Roles(RoleType.ADMIN)
-  @ApiOperation({ title: 'Create pet' })
+  @Roles(RoleType.ADMIN, RoleType.USER)
+  @ApiOperation({ title: 'Add a new pet to the store' })
   @ApiResponse({
-    status: 201,
-    description: 'The record has been successfully created.',
+    status: 405,
+    description: 'Invalid input.',
     type: PetDTO,
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
@@ -77,9 +47,34 @@ export class PetController {
     return await this.petService.update(petDTO, req.user?.userName);
   }
 
-  @Put('/:id')
+
+  @Get('/findByStatus')
+  @Roles(RoleType.USER, RoleType.ADMIN)
+  @ApiResponse({
+    status: 200,
+    description: 'Finds pets by status',
+    type: [PetDTO],
+  })
+  async findByStatus(@Param('id') id: number): Promise<PetDTO[]>  {
+    const result = await this.petService.findById(id);
+    return [result];
+  }
+
+  @Get('/:id')
+  @Roles(RoleType.USER, RoleType.ADMIN)
+  @ApiResponse({
+    status: 200,
+    description: 'Find by id',
+    type: PetDTO,
+  })
+  async getOne(@Param('id') id: number): Promise<PetDTO>  {
+    return await this.petService.findById(id);
+  }
+
+
+  @PostMethod('/:id')
   @Roles(RoleType.ADMIN)
-  @ApiOperation({ title: 'Update pet with id' })
+  @ApiOperation({ title: 'update pet by id' })
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
@@ -101,4 +96,22 @@ export class PetController {
     HeaderUtil.addEntityDeletedHeaders(req.res, 'Pet', id);
     return await this.petService.deleteById(id);
   }
+
+  /*@Get('/')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: PetDTO,
+  })
+  async getAll(@Req() req: Request): Promise<PetDTO []>  {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const [results, count] = await this.petService.findAndCount({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+    });
+    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+    return results;
+  }*/
 }

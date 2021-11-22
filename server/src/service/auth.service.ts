@@ -8,6 +8,8 @@ import {AuthorityRepository} from '../repository/authority.repository';
 import {UserService} from '../service/user.service';
 import {UserDTO} from './dto/user.dto';
 import {FindManyOptions} from 'typeorm';
+import {CacheService} from "./cache.service";
+import {Request} from "express";
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
         @InjectRepository(AuthorityRepository) private authorityRepository: AuthorityRepository,
         private userService: UserService,
+        private cacheService: CacheService,
     ) {}
 
     async login(userLogin: UserLoginDTO): Promise<any> {
@@ -37,9 +40,18 @@ export class AuthService {
         const payload: Payload = { id: user.id, username: user.userName, authorities: user.authorities };
 
         /* eslint-disable */
-    return {
-      id_token: this.jwtService.sign(payload)
-    };
+      const result = {
+        id_token: this.jwtService.sign(payload)
+      };
+      const authorization = `Bearer ${result.id_token}`;
+      await this.cacheService.handleJWTToken("authorization", authorization, 'add');
+
+      return result;
+  }
+
+  async logout(req: Request): Promise<any> {
+    const result = await this.cacheService.handleJWTToken("authorization", req.headers.authorization, 'delete');
+    return result;
   }
 
   /* eslint-enable */

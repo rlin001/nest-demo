@@ -12,8 +12,7 @@ import {
   Req,
   Res,
   UseGuards,
-  UseInterceptors,
-  Session
+  UseInterceptors
 } from '@nestjs/common';
 import {Request, Response} from 'express';
 import {AuthGuard, Roles, RolesGuard, RoleType} from '../../security';
@@ -26,10 +25,8 @@ import {Page, PageRequest} from "../../domain/base/pagination.entity";
 import {HeaderUtil} from "../../client/header-util";
 import {UserService} from "../../service/user.service";
 import {Request as UserRequest} from '../../client/request';
-import session, {Cookie} from "express-session";
-import {CacheService} from "../../service/cache.service";
 
-@Controller('user')
+@Controller('/user')
 @UseInterceptors(LoggingInterceptor)
 @ApiUseTags('User')
 export class AccountController {
@@ -38,7 +35,6 @@ export class AccountController {
     constructor(
       private readonly authService: AuthService,
       private readonly userService: UserService,
-      private readonly cacheService: CacheService
     ) {}
 
     @Post('/createWithList')
@@ -129,7 +125,7 @@ export class AccountController {
       return await this.userService.delete(userToDelete);
     }
 
-    @Post('/login')
+    @Post('/rest/login')
     @ApiOperation({ title: 'Logs user into the system' })
     @ApiResponse({
       status: 201,
@@ -138,32 +134,28 @@ export class AccountController {
     async login(@Req() req: Request, @Body() user: UserLoginDTO, @Res() res: Response): Promise<any> {
       const jwt = await this.authService.login(user);
       const authorization = `Bearer ${jwt.id_token}`;
-      res.setHeader('Authorization', 'Bearer ' + jwt.id_token);
-      await this.cacheService.handleJWTToken("authorization", authorization, 'add');
+      res.setHeader('Authorization', authorization);
       return res.json(jwt);
     }
 
-    @Get('/logout')
-    @Roles(RoleType.ADMIN, RoleType.USER)
-    @UseGuards(AuthGuard, RolesGuard)
-    @UseInterceptors(ClassSerializerInterceptor)
+    @Get('/rest/logout')
+    @UseGuards(AuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ title: 'Logs out current logged in user session' })
+    @ApiOperation({ title: 'Get the list of users' })
     @ApiResponse({
       status: 200,
       description: 'logout success',
     })
-    async logout(@Req() req: Request, @Body() user: any, @Res() res: Response): Promise<any> {
-      this.logger.log("execute logout", req.header("Authorization"));
-      await this.cacheService.handleJWTToken("authorization", req.header("Authorization"), 'delete');
+    async logout(@Req() req: Request, @Res() res: Response): Promise<any> {
+      this.logger.log("logout ", req.headers.authorization)
+      const result = await this.authService.logout(req);
       return res.json({
-        status: 200,
-        description: 'logout success',
+        status: result ? 200 : 500,
+        description: result ? 'logout success': 'logout failed',
       });
     }
 
-
-  @Get('/')
+  /*@Get('/')
   @Roles(RoleType.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -185,7 +177,7 @@ export class AccountController {
     });
     HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
-  }
+  }*/
 
 
 

@@ -114,6 +114,14 @@ Then, run a Sonar analysis in the server folder:
 
 For more information, refer to the [Code quality page][].
 
+#### redis
+
+start redis by docker
+
+```
+docker-compose up -d
+```
+
 [jhipster homepage and latest documentation]: https://www.jhipster.tech
 [jhipster 7.0.1 archive]: https://www.jhipster.tech/documentation-archive/v7.0.1
 [doing microservices with jhipster]: https://www.jhipster.tech/documentation-archive/v7.0.1/microservices-architecture/

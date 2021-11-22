@@ -1,0 +1,54 @@
+/** category */
+entity Category {
+	id Long unique,
+    name String
+}
+
+/** tag */
+entity Tag {
+	id Long unique,
+    name String
+}
+
+/** pet */
+entity Pet {
+	id Long unique,
+    name String,
+    photoUrls String,
+    status PetStatus
+}
+
+/** pet status */
+enum PetStatus {
+    AVAILABLE, PENDING, SOLD
+}
+
+/** order */
+entity Order {
+	id Long unique,
+    quantity Integer,
+    shipDate Instant,
+    status OrderStatus
+}
+
+entity ApiResponse {
+	code Integer
+    type String
+    message String
+}
+
+
+/** order status */
+enum OrderStatus {
+    PLACED, APPROVED, DELIVERED
+}
+
+relationship ManyToOne {
+	Order{petId (petId)} to Pet
+    Pet{category (category)} to Category
+}
+
+
+relationship ManyToMany {
+	Pet{tag} to Tag
+}

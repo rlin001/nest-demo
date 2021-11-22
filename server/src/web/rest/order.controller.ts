@@ -9,7 +9,7 @@ import { Request } from '../../client/request';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 
 
-@Controller('api/orders')
+@Controller('store')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, ClassSerializerInterceptor)
 @ApiBearerAuth()
@@ -20,74 +20,45 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
 
-  @Get('/')
+  @Get('/inventory')
   @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'List all records',
-    type: OrderDTO,
-  })
-  async getAll(@Req() req: Request): Promise<OrderDTO []>  {
-    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.orderService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-    });
-    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
-    return results;
-  }
-
-  @Get('/:id')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'The found record',
-    type: OrderDTO,
-  })
-  async getOne(@Param('id') id: number): Promise<OrderDTO>  {
-    return await this.orderService.findById(id);
-  }
-
-  @PostMethod('/')
-  @Roles(RoleType.ADMIN)
-  @ApiOperation({ title: 'Create order' })
+  @ApiOperation({ title: 'return pet inventory by status' })
   @ApiResponse({
     status: 201,
-    description: 'The record has been successfully created.',
+    description: 'create a order with pet.',
     type: OrderDTO,
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async post(@Req() req: Request, @Body() orderDTO: OrderDTO): Promise<OrderDTO>  {
+  async getInventory(@Req() req: Request, @Body() orderDTO: OrderDTO): Promise<OrderDTO>  {
     const created = await this.orderService.save(orderDTO, req.user?.userName);
     HeaderUtil.addEntityCreatedHeaders(req.res, 'Order', created.id);
     return created;
   }
 
-  @Put('/')
-  @Roles(RoleType.ADMIN)
-  @ApiOperation({ title: 'Update order' })
+  @PostMethod('/order')
+  @Roles(RoleType.USER)
+  @ApiOperation({ title: 'Create order' })
   @ApiResponse({
-    status: 200,
-    description: 'The record has been successfully updated.',
+    status: 201,
+    description: 'create a order with pet.',
     type: OrderDTO,
   })
-  async put(@Req() req: Request, @Body() orderDTO: OrderDTO): Promise<OrderDTO>  {
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'Order', orderDTO.id);
-    return await this.orderService.update(orderDTO, req.user?.userName);
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async createOrder(@Req() req: Request, @Body() orderDTO: OrderDTO): Promise<OrderDTO>  {
+    const created = await this.orderService.save(orderDTO, req.user?.userName);
+    HeaderUtil.addEntityCreatedHeaders(req.res, 'Order', created.id);
+    return created;
   }
 
-  @Put('/:id')
-  @Roles(RoleType.ADMIN)
-  @ApiOperation({ title: 'Update order with id' })
+  @Get('/order/:id')
+  @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
-    description: 'The record has been successfully updated.',
+    description: 'Find order by id',
     type: OrderDTO,
   })
-  async putId(@Req() req: Request, @Body() orderDTO: OrderDTO): Promise<OrderDTO>  {
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'Order', orderDTO.id);
-    return await this.orderService.update(orderDTO, req.user?.userName);
+  async getOrderById(@Param('id') id: number): Promise<OrderDTO>  {
+    return await this.orderService.findById(id);
   }
 
   @Delete('/:id')

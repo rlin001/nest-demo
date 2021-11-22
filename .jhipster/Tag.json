@@ -1,0 +1,37 @@
+{
+  "name": "Tag",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["unique"]
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipName": "pet",
+      "otherEntityName": "pet",
+      "relationshipType": "many-to-many",
+      "otherEntityRelationshipName": "tag",
+      "ownerSide": false
+    }
+  ],
+  "javadoc": "tag",
+  "entityTableName": "tag",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": "*",
+  "microserviceName": "nestjsDemo",
+  "clientRootFolder": "nestjsDemo",
+  "databaseType": "sql",
+  "changelogDate": "20211121095907"
+}

@@ -1,0 +1,46 @@
+{
+  "name": "Order",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["unique"]
+    },
+    {
+      "fieldName": "quantity",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "shipDate",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "OrderStatus",
+      "fieldValues": "PLACED,APPROVED,DELIVERED"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "pet",
+      "otherEntityRelationshipName": "order",
+      "relationshipName": "petId",
+      "otherEntityField": "petId"
+    }
+  ],
+  "javadoc": "order",
+  "entityTableName": "jhi_order",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": "*",
+  "microserviceName": "nestjsDemo",
+  "clientRootFolder": "nestjsDemo",
+  "databaseType": "sql",
+  "changelogDate": "20211121095909"
+}

@@ -1,0 +1,53 @@
+{
+  "name": "Pet",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["unique"]
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "photoUrls",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "PetStatus",
+      "fieldValues": "AVAILABLE,PENDING,SOLD"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "category",
+      "otherEntityRelationshipName": "pet",
+      "relationshipName": "category",
+      "otherEntityField": "category"
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "tag",
+      "otherEntityRelationshipName": "pet",
+      "relationshipName": "tag",
+      "ownerSide": true
+    }
+  ],
+  "javadoc": "pet",
+  "entityTableName": "pet",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": "*",
+  "microserviceName": "nestjsDemo",
+  "clientRootFolder": "nestjsDemo",
+  "databaseType": "sql",
+  "changelogDate": "20211121095908"
+}
