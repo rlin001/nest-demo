@@ -13,7 +13,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, ClassSerializerInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('orders')
+@ApiUseTags('Store')
 export class OrderController {
   logger = new Logger('OrderController');
 

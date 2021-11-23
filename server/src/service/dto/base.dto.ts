@@ -1,8 +1,12 @@
+import {ApiModelProperty} from "@nestjs/swagger";
+
 /**
  * A DTO base object.
  */
 export class BaseDTO {
-    id?: number;
+
+    @ApiModelProperty({description: 'id, should be number', required: false})
+    id: number;
 
     createdBy?: string;
 

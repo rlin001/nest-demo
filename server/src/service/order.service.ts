@@ -21,22 +21,6 @@ export class OrderService {
         return OrderMapper.fromEntityToDTO(result);
       }
 
-      async findByFields(options: FindOneOptions<OrderDTO>): Promise<OrderDTO | undefined> {
-        const result = await this.orderRepository.findOne(options);
-        return OrderMapper.fromEntityToDTO(result);
-      }
-
-      async findAndCount(options: FindManyOptions<OrderDTO>): Promise<[OrderDTO[], number]> {
-        options.relations = relationshipNames;
-        const resultList = await this.orderRepository.findAndCount(options);
-        const orderDTO: OrderDTO[] = [];
-        if (resultList && resultList[0]) {
-            resultList[0].forEach(order => orderDTO.push(OrderMapper.fromEntityToDTO(order)));
-            resultList[0] = orderDTO;
-        }
-        return resultList;
-      }
-
       async save(orderDTO: OrderDTO, creator?: string): Promise<OrderDTO | undefined> {
         const entity = OrderMapper.fromDTOtoEntity(orderDTO);
         if (creator) {

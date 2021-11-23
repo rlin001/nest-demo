@@ -8,15 +8,12 @@ import { BaseDTO } from './base.dto';
 /**
  * A ApiResponseDTO object.
  */
-export class ApiResponseDTO extends BaseDTO {
+export class ApiResponseDTO {
 
-            @ApiModelProperty({description: 'code field', required: false})
         code: number;
 
-            @ApiModelProperty({description: 'type field', required: false})
         type: string;
 
-            @ApiModelProperty({description: 'message field', required: false})
         message: string;
 
 

@@ -35,7 +35,7 @@ export class UserService {
             resultList[0].forEach(user => usersDTO.push(UserMapper.fromEntityToDTO(this.flatAuthorities(user))));
             resultList[0] = usersDTO;
         }
-        return resultList;
+        return [usersDTO, resultList[1]];
     }
 
 

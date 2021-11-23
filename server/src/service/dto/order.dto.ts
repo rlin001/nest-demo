@@ -13,18 +13,20 @@ import { OrderStatus } from '../../domain/enumeration/order-status';
  */
 export class OrderDTO extends BaseDTO {
 
-            @ApiModelProperty({description: 'quantity field', required: false})
+        @ApiModelProperty({description: 'quantity field', required: false})
         quantity: number;
 
-            @ApiModelProperty({description: 'shipDate field', required: false})
+        @ApiModelProperty({description: 'shipDate field', required: false})
         shipDate: any;
 
-            @ApiModelProperty({ enum: OrderStatus,description: 'status enum field', required: false})
+        @ApiModelProperty({ enum: OrderStatus,description: 'status enum field', required: false})
         status: OrderStatus;
 
+        @ApiModelProperty({ description: 'petId'})
+        petId: string;
 
-        @ApiModelProperty({ type: PetDTO,description: 'petId relationship'})
-        petId: PetDTO;
+        @ApiModelProperty({ description: 'order complete'})
+        complete: boolean;
 
         // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 

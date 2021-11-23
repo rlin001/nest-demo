@@ -33,7 +33,7 @@ export class CategoryService {
             resultList[0].forEach(category => categoryDTO.push(CategoryMapper.fromEntityToDTO(category)));
             resultList[0] = categoryDTO;
         }
-        return resultList;
+        return [categoryDTO, resultList[1]];
       }
 
       async save(categoryDTO: CategoryDTO, creator?: string): Promise<CategoryDTO | undefined> {

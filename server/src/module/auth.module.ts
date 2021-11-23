@@ -9,7 +9,6 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {AuthorityRepository} from '../repository/authority.repository';
 
 import {AccountController} from '../web/rest/account.controller';
-import {RedisCacheModule} from "./cache.module";
 
 @Module({
     imports: [
@@ -20,7 +19,6 @@ import {RedisCacheModule} from "./cache.module";
             secret: config['jhipster.security.authentication.jwt.base64-secret'],
             signOptions: { expiresIn: '300s' },
         }),
-      RedisCacheModule
     ],
     controllers: [AccountController],
     providers: [AuthService, JwtStrategy],

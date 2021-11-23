@@ -4,6 +4,7 @@ import { FindManyOptions, FindOneOptions } from 'typeorm';
 import { TagDTO }  from '../service/dto/tag.dto';
 import { TagMapper }  from '../service/mapper/tag.mapper';
 import { TagRepository } from '../repository/tag.repository';
+import {Tag} from "../domain/tag.entity";
 
 const relationshipNames = [];
 
@@ -25,15 +26,20 @@ export class TagService {
         return TagMapper.fromEntityToDTO(result);
       }
 
-      async findAndCount(options: FindManyOptions<TagDTO>): Promise<[TagDTO[], number]> {
-        options.relations = relationshipNames;
-        const resultList = await this.tagRepository.findAndCount(options);
-        const tagDTO: TagDTO[] = [];
-        if (resultList && resultList[0]) {
-            resultList[0].forEach(tag => tagDTO.push(TagMapper.fromEntityToDTO(tag)));
-            resultList[0] = tagDTO;
-        }
-        return resultList;
+      async saveOrUpdateList(tagDTOs: TagDTO[], creator?: string): Promise<TagDTO[] | undefined> {
+        const entitys: Tag[] = [];
+        tagDTOs.map((tagDTO)=>{
+          const entity = TagMapper.fromDTOtoEntity(tagDTO);
+          if (creator) {
+            if (!entity.createdBy) {
+              entity.createdBy = creator;
+            }
+            entity.lastModifiedBy = creator;
+          }
+          entitys.push(entity)
+        })
+        const results = await this.tagRepository.save(entitys);
+        return results.map((result)=> TagMapper.fromEntityToDTO(result));
       }
 
       async save(tagDTO: TagDTO, creator?: string): Promise<TagDTO | undefined> {

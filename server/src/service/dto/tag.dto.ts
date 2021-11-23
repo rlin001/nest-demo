@@ -15,10 +15,6 @@ export class TagDTO extends BaseDTO {
             @ApiModelProperty({description: 'name field', required: false})
         name: string;
 
-
-        @ApiModelProperty({ type: PetDTO, isArray: true,description: 'pets relationship'})
-        pets: PetDTO[];
-
         // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
     }

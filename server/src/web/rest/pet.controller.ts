@@ -7,6 +7,8 @@ import { AuthGuard,  Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { Request } from '../../client/request';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import {ApiResponseDTO} from "../../service/dto/api-response.dto";
+import {PetStatus} from "../../domain/enumeration/pet-status";
 
 
 @Controller('pet')
@@ -20,7 +22,7 @@ export class PetController {
   constructor(private readonly petService: PetService) {}
 
   @PostMethod('/')
-  @Roles(RoleType.ADMIN, RoleType.USER)
+  @Roles(RoleType.USER)
   @ApiOperation({ title: 'Add a new pet to the store' })
   @ApiResponse({
     status: 405,
@@ -35,7 +37,7 @@ export class PetController {
   }
 
   @Put('/')
-  @Roles(RoleType.ADMIN)
+  @Roles(RoleType.USER)
   @ApiOperation({ title: 'Update pet' })
   @ApiResponse({
     status: 200,
@@ -49,31 +51,45 @@ export class PetController {
 
 
   @Get('/findByStatus')
-  @Roles(RoleType.USER, RoleType.ADMIN)
+  @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
     description: 'Finds pets by status',
     type: [PetDTO],
   })
-  async findByStatus(@Param('id') id: number): Promise<PetDTO[]>  {
-    const result = await this.petService.findById(id);
-    return [result];
+  async findByStatus(@Body() body: Object ): Promise<PetDTO[]>  {
+    const petStatus = body['status'];
+    let whereObj = [{status: petStatus}];
+    if (Array.isArray(petStatus) && petStatus?.length) {
+      whereObj = petStatus.map((status)=> ({status}))
+    }
+    const results = await this.petService.find({
+      where: whereObj
+    });
+    return results;
   }
 
   @Get('/:id')
-  @Roles(RoleType.USER, RoleType.ADMIN)
+  @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
     description: 'Find by id',
     type: PetDTO,
   })
-  async getOne(@Param('id') id: number): Promise<PetDTO>  {
-    return await this.petService.findById(id);
+  async getOne(@Param('id') id: number): Promise<PetDTO | ApiResponseDTO>  {
+    const result = await this.petService.findById(id);
+    if (result?.id) {
+      return result;
+    }
+    const resp = new ApiResponseDTO();
+    resp.code= 200;
+    resp.message= "no record";
+    return resp;
   }
 
 
   @PostMethod('/:id')
-  @Roles(RoleType.ADMIN)
+  @Roles(RoleType.USER)
   @ApiOperation({ title: 'update pet by id' })
   @ApiResponse({
     status: 200,
@@ -86,32 +102,18 @@ export class PetController {
   }
 
   @Delete('/:id')
-  @Roles(RoleType.ADMIN)
+  @Roles(RoleType.USER)
   @ApiOperation({ title: 'Delete pet' })
   @ApiResponse({
     status: 204,
     description: 'The record has been successfully deleted.',
   })
-  async deleteById(@Req() req: Request, @Param('id') id: number): Promise<void>  {
+  async deleteById(@Req() req: Request, @Param('id') id: number): Promise<ApiResponseDTO>  {
     HeaderUtil.addEntityDeletedHeaders(req.res, 'Pet', id);
-    return await this.petService.deleteById(id);
+    await this.petService.deleteById(id)
+    const resp = new ApiResponseDTO();
+    resp.code= 200;
+    resp.message= "delete success";
+    return resp;
   }
-
-  /*@Get('/')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'List all records',
-    type: PetDTO,
-  })
-  async getAll(@Req() req: Request): Promise<PetDTO []>  {
-    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.petService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-    });
-    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
-    return results;
-  }*/
 }

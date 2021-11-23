@@ -25,11 +25,16 @@ export class Pet extends BaseEntity  {
 
 
     @ManyToOne(type => Category)
+    @JoinTable({
+      name: 'rel_pet_category',
+      joinColumn: { name: 'pet_id', referencedColumnName: "id" },
+      inverseJoinColumn: { name: 'category_id', referencedColumnName: "id" }
+    })
     category: Category;
 
     @ManyToMany(type => Tag )
     @JoinTable({
-        name: 'rel_pet__tag',
+        name: 'rel_pet_tag',
         joinColumn: { name: 'pet_id', referencedColumnName: "id" },
         inverseJoinColumn: { name: 'tag_id', referencedColumnName: "id" }
     })

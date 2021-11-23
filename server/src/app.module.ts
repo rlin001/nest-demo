@@ -4,16 +4,18 @@ import {AuthModule} from './module/auth.module';
 import {ormConfig} from './orm.config';
 import {PetModule} from './module/pet.module';
 import {OrderModule} from './module/order.module';
+import {RedisCacheModule} from "./module/cache.module";
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
 // jhipster-needle-add-service-module-to-main-import - JHipster will import service modules here, do not remove
 
 @Module({
     imports: [
+        RedisCacheModule,
         TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
-        AuthModule,
         PetModule,
         OrderModule,
+        AuthModule,
       // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
     ],
     controllers: [
