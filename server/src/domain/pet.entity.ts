@@ -20,6 +20,9 @@ export class Pet extends BaseEntity  {
     @Column({name: "photo_urls", nullable: true})
     photoUrls: string;
 
+    @Column({name: "inventory", nullable: false})
+    inventory: number;
+
     @Column({type: 'simple-enum', name: 'status', enum: PetStatus})
     status: PetStatus;
 

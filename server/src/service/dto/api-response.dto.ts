@@ -16,6 +16,8 @@ export class ApiResponseDTO {
 
         message: string;
 
+        data: any;
+
 
         // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 

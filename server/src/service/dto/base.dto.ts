@@ -6,7 +6,7 @@ import {ApiModelProperty} from "@nestjs/swagger";
 export class BaseDTO {
 
     @ApiModelProperty({description: 'id, should be number', required: false})
-    id: number;
+    id?: number;
 
     createdBy?: string;
 

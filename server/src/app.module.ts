@@ -13,7 +13,6 @@ import {RedisCacheModule} from "./module/cache.module";
     imports: [
         RedisCacheModule,
         TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
-        PetModule,
         OrderModule,
         AuthModule,
       // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove

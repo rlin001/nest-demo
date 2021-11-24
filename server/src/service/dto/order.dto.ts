@@ -11,7 +11,19 @@ import { OrderStatus } from '../../domain/enumeration/order-status';
 /**
  * A OrderDTO object.
  */
-export class OrderDTO extends BaseDTO {
+export class OrderDTO {
+
+
+        @ApiModelProperty({description: 'id, should be number', required: false})
+        id?: number;
+
+        createdBy?: string;
+
+        createdDate?: Date;
+
+        lastModifiedBy?: string;
+
+        lastModifiedDate?: Date;
 
         @ApiModelProperty({description: 'quantity field', required: false})
         quantity: number;

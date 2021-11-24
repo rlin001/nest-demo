@@ -1,9 +1,18 @@
-import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
-import { OrderDTO }  from '../service/dto/order.dto';
-import { OrderMapper }  from '../service/mapper/order.mapper';
-import { OrderRepository } from '../repository/order.repository';
+import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {OrderDTO} from '../service/dto/order.dto';
+import {OrderMapper} from '../service/mapper/order.mapper';
+import {OrderRepository} from '../repository/order.repository';
+import {PetService} from "./pet.service";
+import {ApiResponseDTO} from "./dto/api-response.dto";
+import {generateResp} from "../utils";
+import {FindManyOptions} from "typeorm";
+import {UserDTO} from "./dto/user.dto";
+import {CategoryDTO} from "./dto/category.dto";
+import {CategoryMapper} from "./mapper/category.mapper";
+import {Order} from "../domain/order.entity";
+import {PetDTO} from "./dto/pet.dto";
+import {PetMapper} from "./mapper/pet.mapper";
 
 const relationshipNames = [];
     relationshipNames.push('petId');
@@ -13,7 +22,10 @@ const relationshipNames = [];
 export class OrderService {
     logger = new Logger('OrderService');
 
-    constructor(@InjectRepository(OrderRepository) private orderRepository: OrderRepository) {}
+    constructor(
+      @InjectRepository(OrderRepository) private orderRepository: OrderRepository,
+      private petService: PetService,
+    ) {}
 
       async findById(id: number): Promise<OrderDTO | undefined> {
         const options = { relations: relationshipNames };
@@ -21,7 +33,23 @@ export class OrderService {
         return OrderMapper.fromEntityToDTO(result);
       }
 
-      async save(orderDTO: OrderDTO, creator?: string): Promise<OrderDTO | undefined> {
+      async findAllOrderAndPet(options?: FindManyOptions<Order>): Promise<[OrderDTO[], PetDTO[]]> {
+        if (options) {
+          options.relations = relationshipNames;
+        } else {
+          options = {relations: relationshipNames}
+        }
+        const resultList = await this.orderRepository.findAndCount(options)
+        const petResultList = await this.petService.findAndCount();
+
+        const orderDTOs: OrderDTO[] = [];
+        if (resultList && resultList[0]) {
+          resultList[0].forEach(order => orderDTOs.push(OrderMapper.fromEntityToDTO(order)));
+        }
+        return [orderDTOs, petResultList[0]];
+      }
+
+      async save(orderDTO: OrderDTO, creator?: string): Promise<OrderDTO | ApiResponseDTO | undefined> {
         const entity = OrderMapper.fromDTOtoEntity(orderDTO);
         if (creator) {
             if (!entity.createdBy) {
@@ -29,8 +57,13 @@ export class OrderService {
             }
             entity.lastModifiedBy = creator;
         }
-        const result = await this.orderRepository.save(entity);
-        return OrderMapper.fromEntityToDTO(result);
+        const executeStatus = await this.petService.checkInventory(Number(orderDTO.petId), orderDTO.quantity);
+        if (executeStatus) {
+          const result = await this.orderRepository.save(entity);
+          await this.petService.updateInventory(Number(orderDTO.petId), orderDTO.quantity)
+          return OrderMapper.fromEntityToDTO(result);
+        }
+        return generateResp(false, 200, 'current pet hasn\'t enough stock');
       }
 
       async update(orderDTO: OrderDTO, updater?: string): Promise<OrderDTO | undefined> {

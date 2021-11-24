@@ -5,12 +5,12 @@
   "description": "Description for nestjsDemo",
   "license": "UNLICENSED",
   "scripts": {
-    "build:app": "cd server && npm run build",
+    "build:app": "cd redis && docker-compose up -d && cd .. && cd server && npm run build",
     "lint:fix": "echo \"INFO: no client found\"",
     "preinstall": "cd server && npm run lint:fix",
     "prettier:check": "prettier --check \"{,src/**/}*.{md,json,yml,html,java}\"",
     "prettier:format": "prettier --write \"{,src/**/}*.{md,json,yml,html,java}\"",
-    "start:app": "cd server && npm run start",
+    "start:app": "cd redis && docker-compose up -d && cd .. && cd server && npm run start",
     "test": "echo \"INFO: no client test found\""
   },
   "dependencies": {

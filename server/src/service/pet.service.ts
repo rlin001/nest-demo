@@ -12,6 +12,9 @@ import {Tag} from "../domain/tag.entity";
 import {Pet} from "../domain/pet.entity";
 import {UserDTO} from "./dto/user.dto";
 import {UserMapper} from "./mapper/user.mapper";
+import {Order} from "../domain/order.entity";
+import {OrderDTO} from "./dto/order.dto";
+import {OrderMapper} from "./mapper/order.mapper";
 
 const relationshipNames = [];
     relationshipNames.push('category');
@@ -34,6 +37,24 @@ export class PetService {
         return PetMapper.fromEntityToDTO(result);
       }
 
+      async checkInventory(id: number, quantity: number): Promise<Boolean | undefined> {
+        const options = { relations: relationshipNames };
+        const result = await this.petRepository.findOne(id, options);
+        const hasStock = result?.inventory && result.inventory > quantity;
+        return hasStock;
+      }
+
+      async updateInventory(id: number, quantity: number, creator?:string): Promise<PetDTO | undefined> {
+        const options = { relations: relationshipNames };
+        const result = await this.petRepository.findOne(id, options);
+        result.inventory -= quantity;
+        if (creator) {
+          result.lastModifiedBy = creator;
+        }
+        const updateResult = await this.petRepository.save(result);
+        return PetMapper.fromEntityToDTO(updateResult);
+      }
+
       async find(options: FindManyOptions<PetDTO>): Promise<PetDTO[] | undefined> {
         const results = await this.petRepository.find(options);
         if (results?.length) {
@@ -47,8 +68,12 @@ export class PetService {
         return PetMapper.fromEntityToDTO(result);
       }
 
-      async findAndCount(options: FindManyOptions<PetDTO>): Promise<[PetDTO[], number]> {
-        options.relations = relationshipNames;
+      async findAndCount(options?: FindManyOptions<PetDTO>): Promise<[PetDTO[], number]> {
+        if (options) {
+          options.relations = relationshipNames;
+        } else {
+          options = {relations: relationshipNames}
+        }
         const resultList = await this.petRepository.findAndCount(options);
         const petsDTO: PetDTO[] = [];
         if (resultList && resultList[0]) {
@@ -64,6 +89,7 @@ export class PetService {
                 entity.createdBy = creator;
             }
             entity.lastModifiedBy = creator;
+            entity.inventory = 100;
         }
         await this.checkRelateUpdate(entity, creator)
         const result = await this.petRepository.save(entity);
