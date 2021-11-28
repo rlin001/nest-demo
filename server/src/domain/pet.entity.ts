@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable} from 'typeorm';
-import { BaseEntity } from './base/base.entity';
+import {Column, Entity, JoinTable, ManyToMany, ManyToOne} from 'typeorm';
+import {BaseEntity} from './base/base.entity';
 
 
-import { Category } from './category.entity';
-import { Tag } from './tag.entity';
-import { PetStatus } from './enumeration/pet-status';
+import {Category} from './category.entity';
+import {Tag} from './tag.entity';
+import {PetStatus} from './enumeration/pet-status';
 
 
 /**
@@ -17,8 +17,8 @@ export class Pet extends BaseEntity  {
     @Column({name: "name", nullable: true})
     name: string;
 
-    @Column({name: "photo_urls", nullable: true})
-    photoUrls: string;
+    @Column({type : "simple-array", nullable: true})
+    photoUrls: string[];
 
     @Column({name: "inventory", nullable: false})
     inventory: number;

@@ -11,7 +11,7 @@ const useJHipsterRegistry = config.get('eureka.client.enabled');
 import session from 'express-session';
 
 async function bootstrap(): Promise<void> {
-    loadCloudConfig();
+    await loadCloudConfig();
     registerAsEurekaService();
 
     const appOptions = { cors: true };

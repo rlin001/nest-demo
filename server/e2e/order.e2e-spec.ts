@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request = require('supertest');
 import { AppModule } from '../src/app.module';
 import { INestApplication } from '@nestjs/common';
-import { AuthGuard } from '../src/security/guards/auth.guard';
-import { RolesGuard } from '../src/security/guards/roles.guard';
+import { AuthGuard } from '../src/security';
+import { RolesGuard } from '../src/security';
 import { OrderDTO } from '../src/service/dto/order.dto';
 import { OrderService } from '../src/service/order.service';
 
@@ -13,15 +13,15 @@ describe('Order Controller', () => {
     const authGuardMock = { canActivate: (): any => true };
     const rolesGuardMock = { canActivate: (): any => true };
     const entityMock: any = {
-        id: 'entityId'
+        id: 'entityId',
+        quantity: 2
     }
 
     const serviceMock = {
         findById: (): any => entityMock,
-        findAndCount: (): any => [entityMock, 0],
         save: (): any => entityMock,
-        update: (): any => entityMock,
-        deleteById: (): any => entityMock
+        deleteById: (): any => entityMock,
+        findAllOrderAndPet: (): any => [[entityMock], [entityMock]],
     };
 
 
@@ -40,80 +40,37 @@ describe('Order Controller', () => {
         await app.init();
     });
 
-    it('/GET all orders ', async () => {
-
-        const getEntities: OrderDTO[] = (await request(app.getHttpServer())
-        .get('/api/orders')
-        .expect(200)).body;
-
-        expect(getEntities).toEqual(entityMock);
-
-    }
-    );
-
     it('/GET orders by id', async () => {
-
-
         const getEntity: OrderDTO = (await request(app.getHttpServer())
-            .get('/api/orders/' + entityMock.id)
-            .expect(200)).body;
-
+          .get('/store/order/' + entityMock.id)
+          .expect(200)).body;
         expect(getEntity).toEqual(entityMock);
-
-    }
+      }
     );
 
     it('/POST create orders', async () => {
-
         const createdEntity: OrderDTO = (await request(app.getHttpServer())
-            .post('/api/orders')
+            .post('/store/order')
             .send(entityMock)
             .expect(201)).body;
-
         expect(createdEntity).toEqual(entityMock);
-
     }
     );
-
-    it('/PUT update orders', async () => {
-
-
-        const updatedEntity: OrderDTO = (await request(app.getHttpServer())
-            .put('/api/orders')
-            .send(entityMock)
-            .expect(201)).body;
-
-
-        expect(updatedEntity).toEqual(entityMock);
-
-    }
-    );
-
-    it('/PUT update orders from id', async () => {
-
-
-        const updatedEntity: OrderDTO = (await request(app.getHttpServer())
-            .put('/api/orders/' + entityMock.id)
-            .send(entityMock)
-            .expect(201)).body;
-
-
-        expect(updatedEntity).toEqual(entityMock);
-
-    }
-    );
-
 
     it('/DELETE orders', async () => {
-
-
         const deletedEntity: OrderDTO = (await request(app.getHttpServer())
-            .delete('/api/orders/' + entityMock.id)
+            .delete('/store/order/' + entityMock.id)
             .expect(204)).body;
-
             expect(deletedEntity).toEqual({});
     }
     );
+
+    it('/GET Returns pet inventory', async () => {
+      const getEntity = (await request(app.getHttpServer())
+        .get('/store/inventory')
+        .expect(200)).body;
+      expect(getEntity?.SOLD > 0).toEqual(true);
+    });
 
     afterEach(async () => {
         await app.close();

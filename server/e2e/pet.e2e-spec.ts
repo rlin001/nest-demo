@@ -2,10 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request = require('supertest');
 import { AppModule } from '../src/app.module';
 import { INestApplication } from '@nestjs/common';
-import { AuthGuard } from '../src/security/guards/auth.guard';
-import { RolesGuard } from '../src/security/guards/roles.guard';
+import { AuthGuard } from '../src/security';
+import { RolesGuard } from '../src/security';
 import { PetDTO } from '../src/service/dto/pet.dto';
 import { PetService } from '../src/service/pet.service';
+import {CategoryService} from "../src/service/category.service";
+import {TagService} from "../src/service/tag.service";
 
 describe('Pet Controller', () => {
     let app: INestApplication;
@@ -18,10 +20,10 @@ describe('Pet Controller', () => {
 
     const serviceMock = {
         findById: (): any => entityMock,
-        findAndCount: (): any => [entityMock, 0],
         save: (): any => entityMock,
         update: (): any => entityMock,
-        deleteById: (): any => entityMock
+        deleteById: (): any => entityMock,
+        find: (): any => [entityMock],
     };
 
 
@@ -40,79 +42,58 @@ describe('Pet Controller', () => {
         await app.init();
     });
 
-    it('/GET all pets ', async () => {
-
-        const getEntities: PetDTO[] = (await request(app.getHttpServer())
-        .get('/api/pets')
-        .expect(200)).body;
-
-        expect(getEntities).toEqual(entityMock);
-
-    }
-    );
-
-    it('/GET pets by id', async () => {
-
-
+    it('/GET pet by id', async () => {
         const getEntity: PetDTO = (await request(app.getHttpServer())
-            .get('/api/pets/' + entityMock.id)
+            .get('/pet/' + entityMock.id)
             .expect(200)).body;
 
         expect(getEntity).toEqual(entityMock);
-
     }
     );
 
-    it('/POST create pets', async () => {
+    it('/POST create pet', async () => {
 
         const createdEntity: PetDTO = (await request(app.getHttpServer())
-            .post('/api/pets')
+            .post('/pet')
             .send(entityMock)
             .expect(201)).body;
-
         expect(createdEntity).toEqual(entityMock);
-
     }
     );
 
-    it('/PUT update pets', async () => {
-
-
+    it('/PUT update pet', async () => {
         const updatedEntity: PetDTO = (await request(app.getHttpServer())
-            .put('/api/pets')
+            .put('/pet')
             .send(entityMock)
             .expect(201)).body;
-
-
         expect(updatedEntity).toEqual(entityMock);
 
     }
     );
-
-    it('/PUT update pets from id', async () => {
-
-
-        const updatedEntity: PetDTO = (await request(app.getHttpServer())
-            .put('/api/pets/' + entityMock.id)
-            .send(entityMock)
-            .expect(201)).body;
-
-
-        expect(updatedEntity).toEqual(entityMock);
-
-    }
-    );
-
 
     it('/DELETE pets', async () => {
-
-
         const deletedEntity: PetDTO = (await request(app.getHttpServer())
-            .delete('/api/pets/' + entityMock.id)
+            .delete('/pet/' + entityMock.id)
             .expect(204)).body;
-
             expect(deletedEntity).toEqual({});
     }
+    );
+
+    it('/POST pets', async () => {
+        const updatedEntity: PetDTO = (await request(app.getHttpServer())
+          .post('/pet/' + entityMock.id)
+          .expect(201)).body;
+      expect(updatedEntity).toEqual(entityMock);
+      }
+    )
+
+    it('/GET finds pets by status', async () => {
+        const getEntity: PetDTO = (await request(app.getHttpServer())
+          .get('/pet/findByStatus')
+          .send(entityMock)
+          .expect(200)).body;
+        expect(getEntity).toEqual([entityMock]);
+      }
     );
 
     afterEach(async () => {

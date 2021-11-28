@@ -1,15 +1,32 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { PetDTO } from '../../service/dto/pet.dto';
-import { PetService } from '../../service/pet.service';
-import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard,  Roles, RolesGuard, RoleType } from '../../security';
-import { HeaderUtil } from '../../client/header-util';
-import { Request } from '../../client/request';
-import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Param,
+  Post as PostMethod,
+  Put,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
+import {ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags} from '@nestjs/swagger';
+import {PetDTO} from '../../service/dto/pet.dto';
+import {PetService} from '../../service/pet.service';
+import {AuthGuard, PetGuard, Roles, RolesGuard, RoleType} from '../../security';
+import {HeaderUtil} from '../../client/header-util';
+import {Request} from '../../client/request';
+import {LoggingInterceptor} from '../../client/interceptors/logging.interceptor';
 import {ApiResponseDTO} from "../../service/dto/api-response.dto";
-import {PetStatus} from "../../domain/enumeration/pet-status";
-
+import {FileInterceptor} from "@nestjs/platform-express";
+import {generatePath, generateResp} from "../../utils";
+import {diskStorage} from 'multer';
+import { existsSync, mkdirSync } from 'fs';
 
 @Controller('pet')
 @UseGuards(AuthGuard, RolesGuard)
@@ -20,6 +37,47 @@ export class PetController {
   logger = new Logger('PetController');
 
   constructor(private readonly petService: PetService) {}
+
+  @PostMethod('/:id/uploadImage')
+  @Roles(RoleType.USER)
+  @UseGuards(PetGuard)
+  @ApiOperation({ title: 'Uploads an image' })
+  @ApiResponse({ status: 403, description: 'Forbidden or path is not exist' })
+  @UseInterceptors(FileInterceptor('image', {
+    // Check the mimetypes to allow for upload
+    fileFilter: async (req: any, file: any, cb: any) => {
+      if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+        cb(null, true);
+      } else {
+        cb(new HttpException(`Unsupported file type ${file.originalname}`, HttpStatus.BAD_REQUEST), false);
+      }
+    },
+    storage: diskStorage({
+      destination: (req: any, file: any, cb: any) => {
+        const uploadPath = generatePath(true, 'pet', req.params.id);
+        if (!existsSync(uploadPath)) {
+          mkdirSync(uploadPath);
+        }
+        cb(null, uploadPath);
+      },
+      filename: (req: any, file: any, cb: any) => {
+        const petId = req?.params?.id
+        cb(null, `${petId || new Date()}-${file.originalname}`);
+      },
+    }),
+  }))
+  async uploadImage(@Req() req: Request, @Param('id') id: number, @UploadedFile() file): Promise<ApiResponseDTO>  {
+    console.log("file", file);
+    const pet = await this.petService.findById(id);
+
+    let photoUrls = [generatePath(false, 'pet', id.toString(), file.filename).replace(/\\/g,'/')]
+    if (pet.photoUrls) {
+      photoUrls = photoUrls.concat(pet.photoUrls)
+    }
+    pet.photoUrls = photoUrls;
+    const update = await this.petService.save(pet, req.user?.userName);
+   return generateResp(!!update, 200, file);
+  }
 
   @PostMethod('/')
   @Roles(RoleType.USER)

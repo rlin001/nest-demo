@@ -1,20 +1,14 @@
-import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
-import { PetDTO }  from '../service/dto/pet.dto';
-import { PetMapper }  from '../service/mapper/pet.mapper';
-import { PetRepository } from '../repository/pet.repository';
+import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {FindManyOptions, FindOneOptions} from 'typeorm';
+import {PetDTO} from './dto/pet.dto';
+import {PetMapper} from './mapper/pet.mapper';
+import {PetRepository} from '../repository/pet.repository';
 import {CategoryService} from "./category.service";
 import {TagService} from "./tag.service";
 import {CategoryMapper} from "./mapper/category.mapper";
 import {TagMapper} from "./mapper/tag.mapper";
-import {Tag} from "../domain/tag.entity";
 import {Pet} from "../domain/pet.entity";
-import {UserDTO} from "./dto/user.dto";
-import {UserMapper} from "./mapper/user.mapper";
-import {Order} from "../domain/order.entity";
-import {OrderDTO} from "./dto/order.dto";
-import {OrderMapper} from "./mapper/order.mapper";
 
 const relationshipNames = [];
     relationshipNames.push('category');
@@ -28,7 +22,7 @@ export class PetService {
     constructor(
       @InjectRepository(PetRepository) private petRepository: PetRepository,
       private readonly tagService: TagService,
-      private readonly categoryService: CategoryService
+      private readonly categoryService: CategoryService,
     ) {}
 
       async findById(id: number): Promise<PetDTO | undefined> {

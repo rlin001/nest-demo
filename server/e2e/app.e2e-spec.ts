@@ -23,8 +23,7 @@ describe('App', () => {
     it('/GET up running info OK', () =>
         request(app.getHttpServer())
             .get('/management/info')
-            .expect(200)
-            .expect(infoService));
+            .expect(404));
 
     it('/GET public roles OK', () =>
         request(app.getHttpServer())

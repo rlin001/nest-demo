@@ -18,7 +18,7 @@ export class PetDTO extends BaseDTO {
         name: string;
 
             @ApiModelProperty({description: 'photoUrls field', required: false})
-        photoUrls: string;
+        photoUrls: string[];
 
             @ApiModelProperty({ enum: PetStatus,description: 'status enum field', required: false})
         status: PetStatus;

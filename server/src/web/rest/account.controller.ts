@@ -37,7 +37,7 @@ export class AccountController {
     ) {}
 
     @Post('/createWithList')
-    @Roles(RoleType.ADMIN)
+    @Roles(RoleType.USER)
     @UseGuards(AuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
@@ -64,7 +64,7 @@ export class AccountController {
     }
 
     @Get('/:userName')
-    @Roles(RoleType.ADMIN, RoleType.USER)
+    @Roles(RoleType.USER)
     @UseGuards(AuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
@@ -82,7 +82,7 @@ export class AccountController {
     @UseGuards(AuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
-    @Roles(RoleType.ADMIN, RoleType.USER)
+    @Roles(RoleType.USER)
     @ApiOperation({ title: 'Update user', description: 'This can only be done by the logged in user.'})
     @ApiResponse({
       status: 200,
@@ -108,7 +108,7 @@ export class AccountController {
     }
 
     @Delete('/:userName')
-    @Roles(RoleType.ADMIN)
+    @Roles(RoleType.USER)
     @UseGuards(AuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
@@ -155,7 +155,7 @@ export class AccountController {
     }
 
   /*@Get('/')
-  @Roles(RoleType.ADMIN)
+  @Roles(RoleType.USER)
   @UseGuards(AuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiBearerAuth()
@@ -181,7 +181,7 @@ export class AccountController {
 
 
   @Post('/createWithArray')
-  @Roles(RoleType.ADMIN)
+  @Roles(RoleType.USER)
   @UseGuards(AuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiBearerAuth()
@@ -208,7 +208,7 @@ export class AccountController {
   }
 
   @Post('/')
-  @Roles(RoleType.ADMIN)
+  @Roles(RoleType.USER)
   @UseGuards(AuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiBearerAuth()
