@@ -10,6 +10,7 @@ import { UserDTO } from './dto/user.dto';
 import { FindManyOptions } from 'typeorm';
 import { CacheService } from './cache.service';
 import { Request } from 'express';
+import {ApiResponseDTO} from "./dto/api-response.dto";
 
 @Injectable()
 export class AuthService {
@@ -47,6 +48,14 @@ export class AuthService {
       await this.cacheService.handleJWTToken("authorization", authorization, 'add');
 
       return result;
+  }
+
+  async findUserNameByToken (token: string): Promise<string> {
+      const json = await this.jwtService.decode(token.split(' ')[1] || '');
+      // @ts-ignore
+    const username = json.username || '';
+      this.logger.log("username", username)
+      return username;
   }
 
   async logout(req: Request): Promise<any> {

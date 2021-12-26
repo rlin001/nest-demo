@@ -53,6 +53,10 @@ export class Config {
         return this[key];
     }
 
+  public getClientPath(): string {
+    return path.join(__dirname, '../dist/static');
+  }
+
     public addAll(properties): any {
         properties = objectToArray(properties);
         for (const property in properties) {

@@ -24,8 +24,10 @@ import { UserLoginDTO } from '../../service/dto/user-login.dto';
 import { HeaderUtil } from '../../client/header-util';
 import { UserService } from '../../service/user.service';
 import { Request as UserRequest } from '../../client/request';
+import {ApiResponseDTO} from "../../service/dto/api-response.dto";
+import {generateResp} from "../../utils";
 
-@Controller('/user')
+@Controller('/api/user')
 @UseInterceptors(LoggingInterceptor)
 @ApiUseTags('User')
 export class AccountController {
@@ -72,6 +74,28 @@ export class AccountController {
     })
     async getUser(@Param('userName') loginValue: string): Promise<UserDTO> {
         return await this.userService.find({ where: { userName: loginValue } });
+    }
+
+    @Get('/rest/current')
+    @UseInterceptors(ClassSerializerInterceptor)
+    @ApiBearerAuth()
+    @ApiOperation({ title: 'Get user by user name' })
+    @ApiResponse({
+      status: 200,
+      description: 'The found record',
+      type: UserDTO,
+    })
+    async getCurrentUser(@Req() req: UserRequest): Promise<UserDTO | ApiResponseDTO> {
+      this.logger.log("req?.user?.userName", req?.headers?.authorization)
+      if (!req?.headers?.authorization) {
+        return generateResp(true, 200, 'lost token');
+      }
+      const userName = await this.authService.findUserNameByToken(req.headers.authorization);
+      this.logger.log("userName 1111", userName);
+      if (!userName) {
+        return generateResp(true, 200, 'no user');
+      }
+      return await this.userService.find({ where: { userName: userName } });
     }
 
     @Put('/:userName')

@@ -21,7 +21,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 import { ApiResponseDTO } from '../../service/dto/api-response.dto';
 import { generateResp } from '../../utils';
 
-@Controller('store')
+@Controller('/api/store')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, ClassSerializerInterceptor)
 @ApiBearerAuth()

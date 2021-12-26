@@ -28,7 +28,7 @@ import { generatePath, generateResp } from '../../utils';
 import { diskStorage } from 'multer';
 import { existsSync, mkdirSync } from 'fs';
 
-@Controller('pet')
+@Controller('/api/pet')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, ClassSerializerInterceptor)
 @ApiBearerAuth()
