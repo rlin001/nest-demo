@@ -2,23 +2,17 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { BaseDTO } from './base.dto';
 
-
-
-
 /**
  * A ApiResponseDTO object.
  */
 export class ApiResponseDTO {
+    code: number;
 
-        code: number;
+    type: string;
 
-        type: string;
+    message: string;
 
-        message: string;
+    data: any;
 
-        data: any;
-
-
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-
-    }
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+}

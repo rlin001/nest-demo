@@ -32,7 +32,7 @@
             }
         ],
         "@typescript-eslint/indent": [
-            "error",
+            "off",
             4,
             {
                 "FunctionDeclaration": {
@@ -86,7 +86,8 @@
             "off",
             "as-needed"
         ],
-        "camelcase": "error",
+        "camelcase": "off",
+        "@typescript-eslint/camelcase": "off",
         "comma-dangle": [
             "error",
             "always-multiline"

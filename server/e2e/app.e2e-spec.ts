@@ -6,11 +6,6 @@ import { INestApplication } from '@nestjs/common';
 describe('App', () => {
     let app: INestApplication;
 
-    const infoService = {
-        activeProfiles: 'dev',
-        'display-ribbon-on-profiles': 'dev',
-    };
-
     beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],

@@ -1,15 +1,15 @@
-import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {JwtService} from '@nestjs/jwt';
-import {UserLoginDTO} from './dto/user-login.dto';
-import {Payload} from '../security/payload.interface';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { UserLoginDTO } from './dto/user-login.dto';
+import { Payload } from '../security/payload.interface';
 import * as bcrypt from 'bcrypt';
-import {AuthorityRepository} from '../repository/authority.repository';
-import {UserService} from './user.service';
-import {UserDTO} from './dto/user.dto';
-import {FindManyOptions} from 'typeorm';
-import {CacheService} from "./cache.service";
-import {Request} from "express";
+import { AuthorityRepository } from '../repository/authority.repository';
+import { UserService } from './user.service';
+import { UserDTO } from './dto/user.dto';
+import { FindManyOptions } from 'typeorm';
+import { CacheService } from './cache.service';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {

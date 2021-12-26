@@ -21,16 +21,15 @@ async function bootstrap(): Promise<void> {
             exceptionFactory: (): BadRequestException => new BadRequestException('Validation error'),
         }),
     );
-  app.use(
-    session({
-      secret: 'my-secret',
-      resave: false,
-      saveUninitialized: false
-    }),
-  );
+    app.use(
+        session({
+            secret: 'my-secret',
+            resave: false,
+            saveUninitialized: false,
+        }),
+    );
 
-
-  logger.log('The client is not been generated');
+    logger.log('The client is not been generated');
     setupSwagger(app);
 
     await app.listen(port);
