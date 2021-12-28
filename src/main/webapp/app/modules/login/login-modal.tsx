@@ -4,7 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Alert, Row, 
 import { AvForm, AvField, AvGroup, AvInput } from 'availity-reactstrap-validation';
 import { Link } from 'react-router-dom';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { LoginForm } from '@rlin001/store-story-book-demo';
+import { LoginForm, Button as AButton } from '@rlin001/store-story-book-demo';
 
 export interface ILoginModalProps {
   showModal: boolean;
@@ -13,82 +13,36 @@ export interface ILoginModalProps {
   handleClose: () => void;
 }
 
-class LoginModal extends React.Component<ILoginModalProps> {
-  handleSubmit = (event, { loginValue: username, pwdValue: password, rememberMe=false }) => {
-    const { handleLogin } = this.props;
+const LoginModal = (props: ILoginModalProps) => {
+  const handleSubmit = (event, { loginValue: username, pwdValue: password, rememberMe=false }) => {
+    const { handleLogin } = props;
+    // eslint-disable-next-line no-console
+    console.log("username, password, rememberMe", username, password, rememberMe);
     handleLogin(username, password, rememberMe);
   };
 
-  handleReset = (event, { username, password, rememberMe }) => {
+  const handleReset = (event, { username, password, rememberMe=false }) => {
   }
 
-  render() {
-    const { loginError, handleClose } = this.props;
-
-    return (
-      <Modal isOpen={this.props.showModal} toggle={handleClose} backdrop="static" id="login-page" autoFocus={false}>
-        <AvForm onSubmit={this.handleSubmit}>
-          <ModalHeader id="login-title" data-cy="loginTitle" toggle={handleClose}>
-            Sign in
-          </ModalHeader>
-          <ModalBody>
-            <LoginForm reset={ this.handleReset} submit={ this.handleSubmit } title='Login' />
-            <Row>
-              <Col md="12">
-                {loginError ? (
-                  <Alert color="danger" data-cy="loginError">
-                    <strong>Failed to sign in!</strong> Please check your credentials and try again.
-                  </Alert>
-                ) : null}
-              </Col>
-              <Col md="12">
-                <AvField
-                  name="username"
-                  label="Username"
-                  placeholder="Your username"
-                  required
-                  errorMessage="Username cannot be empty!"
-                  autoFocus
-                  data-cy="username"
-                />
-                <AvField
-                  name="password"
-                  type="password"
-                  label="Password"
-                  placeholder="Your password"
-                  required
-                  errorMessage="Password cannot be empty!"
-                  data-cy="password"
-                />
-                <AvGroup check inline>
-                  <Label className="form-check-label">
-                    <AvInput type="checkbox" name="rememberMe" /> Remember me
-                  </Label>
-                </AvGroup>
-              </Col>
-            </Row>
-            <div className="mt-1">&nbsp;</div>
-            <Alert color="warning">
-              <Link to="/account/reset/request" data-cy="forgetYourPasswordSelector">
-                Did you forget your password?
-              </Link>
-            </Alert>
-            <Alert color="warning">
-              <span>You don&apos;t have an account yet?</span> <Link to="/account/register">Register a new account</Link>
-            </Alert>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={handleClose} tabIndex={1}>
-              Cancel
-            </Button>{' '}
-            <Button color="primary" type="submit" data-cy="submit">
-              Sign in
-            </Button>
-          </ModalFooter>
-        </AvForm>
-      </Modal>
-    );
-  }
+  const { loginError, handleClose } = props;
+  // eslint-disable-next-line no-console
+  console.log("LoginForm", LoginForm, typeof LoginForm, typeof Link);
+  return (
+    <Modal isOpen={props.showModal} toggle={handleClose} backdrop="static" id="login-page" autoFocus={false}>
+      <AvForm onSubmit={handleSubmit}>
+        <ModalBody>
+          <LoginForm
+            reset={ handleReset}
+            submit={ handleSubmit }
+            title='login'
+            style={{
+              textAlign: 'center'
+            }}
+          />
+        </ModalBody>
+      </AvForm>
+    </Modal>
+  );
 }
 
 export default LoginModal;
